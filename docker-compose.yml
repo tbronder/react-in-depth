@@ -1,0 +1,38 @@
+# docker-compose.yml - Development environment orchestration
+#
+# Usage:
+#   docker compose up -d      # Start the development container
+#   docker compose exec dev sh  # Open a shell in the container
+#   docker compose down       # Stop and remove the container
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: react-in-depth-dev
+    volumes:
+      # Map project root to container working directory
+      - .:/root/react-in-depth
+      # Persist node_modules in a named volume to avoid conflicts
+      # and improve performance on Windows/macOS
+      - node_modules:/root/react-in-depth/node_modules
+      # Persist Go modules cache
+      - go_modules:/root/go/pkg/mod
+    ports:
+      # React dev server (Vite default)
+      - "5173:5173"
+      # React dev server (Create React App default)
+      - "3000:3000"
+      # Node.js/Express API server
+      - "8080:8080"
+      # Go application server
+      - "8081:8081"
+    # Keep container running for interactive development
+    stdin_open: true
+    tty: true
+    working_dir: /root/react-in-depth
+
+volumes:
+  node_modules:
+  go_modules:
